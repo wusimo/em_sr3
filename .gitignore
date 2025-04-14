@@ -11,6 +11,7 @@ __pycache__/
 experiments/*
 build/
 dataset/*
+dataset_sample/*
 develop-eggs/
 dist/
 downloads/
