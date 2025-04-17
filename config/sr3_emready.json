@@ -19,7 +19,7 @@
             "dataroot": "dataset/emd_0008",
             "datatype": "mrc", //lmdb or img, path of img files
             "l_resolution": 10, // low resolution need to super_resolution
-            "r_resolution": 40, // high resolution
+            "r_resolution": 10, // high resolution
             "batch_size": 4,
             "num_workers": 8,
             "use_shuffle": true,
@@ -31,7 +31,7 @@
             "dataroot": "dataset/emd_0008",
             "datatype": "mrc", //lmdb or img, path of img files
             "l_resolution": 10,
-            "r_resolution": 40,
+            "r_resolution": 10,
             "data_len": 50 // data length in validation 
         }
     },
@@ -41,13 +41,11 @@
         "unet": {
             "in_channel": 2,
             "out_channel": 1,
-            "inner_channel": 40,
+            "inner_channel": 10,
             "norm_groups": 8,
             "channel_multiplier": [
                 1,
                 2,
-                4,
-                8
             ],
             "attn_res": [
                 16
@@ -93,4 +91,3 @@
     "wandb": {
         "project": "sr_ffhq"
     }
-}
