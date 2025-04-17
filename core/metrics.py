@@ -3,6 +3,7 @@ import math
 import numpy as np
 import cv2
 from torchvision.utils import make_grid
+import torch
 
 
 def tensor2img(tensor, out_type=np.uint8, min_max=(-1, 1)):
@@ -91,3 +92,39 @@ def calculate_ssim(img1, img2):
             return ssim(np.squeeze(img1), np.squeeze(img2))
     else:
         raise ValueError('Wrong input image dimensions.')
+
+
+def calculate_psnr_new(tensor1, tensor2):
+    """
+    计算两个3D张量之间的PSNR值
+    
+    参数:
+        tensor1: 第一个3D张量 (B, C, D, H, W) 或 (D, H, W)
+        tensor2: 第二个3D张量，形状与tensor1相同
+        
+    返回:
+        float: PSNR值
+    """
+    # 确保输入是torch.Tensor类型
+    if not isinstance(tensor1, torch.Tensor):
+        tensor1 = torch.tensor(tensor1)
+    if not isinstance(tensor2, torch.Tensor):
+        tensor2 = torch.tensor(tensor2)
+    
+    # 将张量转换为float类型
+    tensor1 = tensor1.float()
+    tensor2 = tensor2.float()
+    
+    # 计算MSE
+    mse = torch.mean((tensor1 - tensor2) ** 2)
+    
+    # 如果MSE为0，返回无穷大
+    if mse == 0:
+        return float('inf')
+    
+    # 计算PSNR
+    # 注意：这里假设数据范围是[0, 1]，如果是[0, 255]，需要将255.0改为1.0
+    max_value = 1.0  # 如果数据范围是[0, 255]，改为255.0
+    psnr = 20 * math.log10(max_value / math.sqrt(mse.item()))
+    
+    return psnr
