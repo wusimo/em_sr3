@@ -119,18 +119,38 @@ if __name__ == "__main__":
                         opt['model']['beta_schedule']['val'], schedule_phase='val')
                     for _,  val_data in enumerate(val_loader):
                         idx += 1
-                        # print("AAA",val_data.keys())
-                        val_data['HR'] = expansion3d(val_data['HR'])
-                        val_data['SR'] = expansion3d(val_data['SR'])
                         diffusion.feed_data(val_data)
                         diffusion.test(continous=False)
                         visuals = diffusion.get_current_visuals()
-                        # print("visuals", visuals.keys())
-                        # print("visuals", visuals['SR'].shape, visuals['HR'].shape)
-                        avg_psnr += Metrics.calculate_psnr_new(
-                            visuals['SR'], visuals['HR'])
+                        sr_img = Metrics.tensor2img(visuals['SR'])  # uint8
+                        hr_img = Metrics.tensor2img(visuals['HR'])  # uint8
+                        lr_img = Metrics.tensor2img(visuals['LR'])  # uint8
+                        fake_img = Metrics.tensor2img(visuals['INF'])  # uint8
+
+                        # generation
+                        Metrics.save_img(
+                            hr_img, '{}/{}_{}_hr.png'.format(result_path, current_step, idx))
+                        Metrics.save_img(
+                            sr_img, '{}/{}_{}_sr.png'.format(result_path, current_step, idx))
+                        Metrics.save_img(
+                            lr_img, '{}/{}_{}_lr.png'.format(result_path, current_step, idx))
+                        Metrics.save_img(
+                            fake_img, '{}/{}_{}_inf.png'.format(result_path, current_step, idx))
+                        tb_logger.add_image(
+                            'Iter_{}'.format(current_step),
+                            np.transpose(np.concatenate(
+                                (fake_img, sr_img, hr_img), axis=1), [2, 0, 1]),
+                            idx)
+                        avg_psnr += Metrics.calculate_psnr(
+                            sr_img, hr_img)
+
+                        if wandb_logger:
+                            wandb_logger.log_image(
+                                f'validation_{idx}', 
+                                np.concatenate((fake_img, sr_img, hr_img), axis=1)
+                            )
+
                     avg_psnr = avg_psnr / idx
-                    print("avg_psnr", avg_psnr)
                     diffusion.set_new_noise_schedule(
                         opt['model']['beta_schedule']['train'], schedule_phase='train')
                     # log

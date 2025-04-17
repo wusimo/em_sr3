@@ -62,9 +62,9 @@ class Upsample(nn.Module):
         self.conv = nn.Conv3d(dim, dim, 3, padding=1)
 
     def forward(self, x):
-        #print("Upsample.x", x.shape)
+        print("Upsample.x", x.shape)
         x = self.conv(self.up(x))
-        #print("Upsample.xout", x.shape)
+        print("Upsample.xout", x.shape)
         return x
 
 
@@ -74,9 +74,9 @@ class Downsample(nn.Module):
         self.conv = nn.Conv3d(dim, dim, 3, stride=2, padding=1)
 
     def forward(self, x):
-        #print("Downsample.x", x.shape)
+        print("Downsample.x", x.shape)
         x = self.conv(x)
-        #print("Downsample.xout", x.shape)
+        print("Downsample.xout", x.shape)
         return x
 
 
@@ -240,7 +240,7 @@ class UNet(nn.Module):
 
         feats = []
         for layer in self.downs:
-            # #print("self.downs.x", x.shape)
+            print("self.downs.x", x.shape)
             if isinstance(layer, ResnetBlocWithAttn):
                 x = layer(x, t)
             else:
@@ -252,14 +252,14 @@ class UNet(nn.Module):
                 x = layer(x, t)
             else:
                 x = layer(x)
-        #print("xxx", x.shape)
-        # for i in range(len(feats)):
-            #print("feats", i, feats[i].shape)
+        print("xxx", x.shape)
+        for i in range(len(feats)):
+            print("feats", i, feats[i].shape)
         for layer in self.ups:
-            #print("self.ups.x", x.shape)
-            #print("self.ups.feats", len(feats) - 1, feats[-1].shape)
-            # #print("concated", torch.cat((x, feats[-1]), dim=1).shape)
-            # #print("self.ups.layer", layer)
+            print("self.ups.x", x.shape)
+            print("self.ups.feats", len(feats) - 1, feats[-1].shape)
+            # print("concated", torch.cat((x, feats[-1]), dim=1).shape)
+            # print("self.ups.layer", layer)
             if isinstance(layer, ResnetBlocWithAttn):
                 x = layer(torch.cat((x, feats.pop()), dim=1), t)
             else:

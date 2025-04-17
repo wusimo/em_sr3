@@ -40,15 +40,15 @@ class DDPM(BaseModel):
                 optim_params, lr=opt['train']["optimizer"]["lr"])
             self.log_dict = OrderedDict()
         self.load_network()
-        # self.print_network()
+        self.print_network()
 
     def feed_data(self, data):
         self.data = self.set_device(data)
 
     def optimize_parameters(self):
         self.optG.zero_grad()
-        # print("optimize_parameters", self.data['HR'].shape)
-        # print("optimize_parameters.netG", self.netG)
+        print("optimize_parameters", self.data['HR'].shape)
+        print("optimize_parameters.netG", self.netG)
         l_pix = self.netG(self.data)
         # need to average in multi-gpu
         b, c, d, h, w = self.data['HR'].shape
