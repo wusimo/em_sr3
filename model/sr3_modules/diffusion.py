@@ -187,13 +187,21 @@ class GaussianDiffusion(nn.Module):
                     ret_img = torch.cat([ret_img, img], dim=0)
         else:
             x = x_in
-            shape = x.shape
-            img = torch.randn(shape, device=device)
+            # Get the shape as a tuple of integers
+            if isinstance(x.shape, torch.Size):
+                shape_tuple = tuple(x.shape)
+            else:
+                shape_tuple = tuple(x.shape)
+            
+            # Generate noise with the correct shape
+            img = torch.randn(shape_tuple, device=device)
             ret_img = x
+            
             for i in tqdm(reversed(range(0, self.num_timesteps)), desc='sampling loop time step', total=self.num_timesteps):
                 img = self.p_sample(img, i, condition_x=x)
                 if i % sample_inter == 0:
                     ret_img = torch.cat([ret_img, img], dim=0)
+        
         if continous:
             return ret_img
         else:
