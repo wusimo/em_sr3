@@ -134,3 +134,4 @@ dmypy.json
 *.lmdb
 
 *.mrc
+/chunk_comparisons
