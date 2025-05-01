@@ -1,0 +1,88 @@
+{
+    "name": "minimal_train",
+    "phase": "train",
+    "gpu_ids": [0],
+    "path": {
+        "log": "minimal_logs",
+        "tb_logger": "minimal_tb_logger",
+        "results": "minimal_results",
+        "checkpoint": "minimal_checkpoint",
+        "resume_state": null
+    },
+    "datasets": {
+        "train": {
+            "name": "minimal",
+            "mode": "HR",
+            "dataroot": "dataset",
+            "hr_folder": "hr_32",
+            "sr_folder": "sr_32_32",
+            "datatype": "mrc",
+            "l_resolution": 32,
+            "r_resolution": 32,
+            "batch_size": 2,
+            "num_workers": 2,
+            "use_shuffle": true,
+            "data_len": -1
+        },
+        "val": {
+            "name": "minimal",
+            "mode": "HR",
+            "dataroot": "dataset_val",
+            "hr_folder": "hr_32",
+            "sr_folder": "sr_32_32",
+            "datatype": "mrc",
+            "l_resolution": 32,
+            "r_resolution": 32,
+            "batch_size": 1,
+            "data_len": 10
+        }
+    },
+    "model": {
+        "which_model_G": "sr3",
+        "finetune_norm": false,
+        "unet": {
+            "in_channel": 2,
+            "out_channel": 1,
+            "inner_channel": 32,
+            "norm_groups": 4,
+            "channel_multiplier": [1, 2],
+            "attn_res": [16],
+            "res_blocks": 4,
+            "dropout": 0.1
+        },
+        "beta_schedule": {
+            "train": {
+                "schedule": "linear",
+                "n_timestep": 1000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            },
+            "val": {
+                "schedule": "linear",
+                "n_timestep": 1000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            }
+        },
+        "diffusion": {
+            "image_size": 32,
+            "channels": 1,
+            "conditional": true
+        }
+    },
+    "train": {
+        "n_iter": 10000,
+        "val_freq": 500,
+        "save_checkpoint_freq": 500,
+        "print_freq": 100,
+        "optimizer": {
+            "type": "adam",
+            "lr": 1e-4
+        },
+        "ema_scheduler": {
+            "step_start_ema": 500,
+            "update_ema_every": 1,
+            "ema_decay": 0.9999
+        }
+    }
+} 
