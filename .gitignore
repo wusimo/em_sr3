@@ -135,3 +135,4 @@ dmypy.json
 
 *.mrc
 /chunk_comparisons
+*.pt
